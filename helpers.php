@@ -31,7 +31,7 @@ function basePath($path = '') {
  }
 
  /**
- * Load a view
+ * Load a partial HTML
  * 
  * @param string $name
  * @return void
