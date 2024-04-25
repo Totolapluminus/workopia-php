@@ -1,0 +1,16 @@
+{
+    "name": "totolapluminus/workopia-php",
+    "description": "Job listing application",
+    "authors": [
+        {
+            "name": "Totolapluminus",
+            "email": "Totolapluminus@yandex.ru"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Framework\\": "Framework/",
+            "App\\": "App/"
+        }
+    }
+}
