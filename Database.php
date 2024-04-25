@@ -29,9 +29,15 @@ class Database{
      * @param string $sql
      * @return obj
      */
-    public function query($sql){
+    public function query($sql, $params = []){
         try{
             $stmt = $this->conn->prepare($sql);
+
+            //Bind named params
+            foreach($params as $param => $value){
+                $stmt->bindValue(':' . $param, $value);       //????????????????
+            }
+
             $stmt->execute();
             return $stmt;
         } catch (PDOException $e) {
