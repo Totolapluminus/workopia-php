@@ -8,7 +8,9 @@ class Router {
     protected $routes = [];
     
     /**
-     * Add a new route to array
+     * Добавляет путь(route) в массив routes этого класса
+     * Сюда передается HTTP метод, который определяется функциями ниже (get, post, put, delete), URI из файла routes.php
+     * Переменная $action заполняется из файла routes а потом разделяется на 2 переменных функциями list и explode  
      *
      * @param string $method
      * @param string $uri
@@ -67,50 +69,54 @@ class Router {
         $this -> registerRoute('DELETE', $uri, $controller);
      }
 
-    /**
-     *  Route the request
+    
+     /**
+     *  Route the request 
      * 
      * @param string $uri
      * @return void
      */ 
 
     public function route($uri){
+        // Запрашиваем метод HTTP с помощью которого он перешел по адрессу
         $requestMethod = $_SERVER['REQUEST_METHOD'];
-        // Check for _method input
+        // Проверяем есть ли _method у скрытого инпута в хтмле (затычка для DELETE и POST запросов)
         if($requestMethod === 'POST' && isset($_POST['_method'])){
             //Override the request method with the value of _method
             $requestMethod = strtoupper($_POST['_method']);
         }
+        //Перебираем массив путей для совпадения с адрессной строкой
         foreach($this->routes as $route) {
 
-            //Split the current URI into segments
+            // Разделяем URI который находится в адрессной строке у пользователя (trim убирает пробелы, а в данном случае убирает еще и /, а explode при этом делит по /)
             $uriSegments = explode('/', trim($uri,'/'));
 
-            //Split the current route URI into segments
+            // Разделяем URI который находится в массиве $routes в текущем пробеге (trim убирает пробелы, а в данном случае убирает еще и /, а explode при этом делит по /)
             $routeSegments = explode('/', trim($route['uri'],'/'));
 
             $match = true;
 
-            //Check if the number of segments matches
+            // Первый if проверяет соответствие методов HTTP и сверяет длинну путей
             if(count($uriSegments) === count($routeSegments) && strtoupper($route['method']) === $requestMethod){
                 $params = [];
                 $match = true;
                 for ($i = 0; $i < count($uriSegments); $i++){
-                    // If the uri's don't match and there is no param in {} (id)
+                    // If the uri's don't match and there is no param in {} (Пока что параметр id) Переходим в следующую итерацию цикла
                     if($routeSegments[$i] !== $uriSegments[$i] && !preg_match('/\{(.+?)\}/', $routeSegments[$i])){
                         $match = false;
                         break;
                     }
-                    //Check for the param and add to $params array
+                    //Если есть параметр в фигурных скобках, то добавляем его в массив params в виде элемента ассоциативного массива matches в виде ["id"] => 1
                     if(preg_match('/\{(.+?)\}/', $routeSegments[$i], $matches)){
                     $params[$matches[1]] = $uriSegments[$i];
                     }
                 }
+                //Если все подходит, то вытаскиваем в переменные класс нужного контроллера и функцию в классе этого контроллера 
                 if($match){
                 $controller = 'App\\Controllers\\' . $route['controller'];
                 $controllerMethod = $route['controllerMethod'];
 
-                //Instantiate the controller (class) and call the method
+                //Instantiate the controller (class) and call the method (Инициализируем объект класса нужного контроллера и завершаем цикл)
                 $controllerInit = new $controller();
                 $controllerInit->$controllerMethod($params);
                 return;

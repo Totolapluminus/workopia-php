@@ -7,10 +7,10 @@ use PDO;
 use PDOException;
 
 class Database{
-    public $conn;
+    public $connection;
 
     /**
-     * Constructor fot database class
+     * Constructor for database class
      * 
      * @param array $config 
      */
@@ -23,7 +23,7 @@ class Database{
         ];
 
         try{
-            $this->conn = new PDO($dsn, $config['username'], $config['password'], $options);
+            $this->connection = new PDO($dsn, $config['username'], $config['password'], $options);
         } catch (PDOException $e) {
             throw new Exception("Database connection failed: {$e->getMessage()}");
         }
@@ -37,7 +37,7 @@ class Database{
      */
     public function query($sql, $params = []){
         try{
-            $stmt = $this->conn->prepare($sql);
+            $stmt = $this->connection->prepare($sql);
 
             //Bind named params
             foreach($params as $param => $value){

@@ -30,16 +30,6 @@ class ListingController {
     }
 
     /**
-     * "Create listing" page
-     *
-     * @return void
-     */
-
-    public function create(){
-        loadView('listings/create');
-    }
-
-    /**
      * "Show details of a listing" page
      * @param array $params
      * @return void
@@ -49,6 +39,7 @@ class ListingController {
     $params = [
         'id' => $id
     ];
+    
     $listing = $this->db->query('SELECT * FROM listings WHERE id = :id', $params)->fetch();
     //Check if listing exists;
     if(!$listing){
@@ -58,6 +49,17 @@ class ListingController {
     loadView('listings/show', [
         'listing' => $listing
     ]);
+    }
+
+
+     /**
+     * "Create listing" page
+     *
+     * @return void
+     */
+
+     public function create(){
+        loadView('listings/create');
     }
 
     /**
@@ -207,7 +209,7 @@ class ListingController {
         //Submit to database
         $updateFields = [];
         foreach(array_keys($updateValues) as $field){
-            $updateFields[] = "{$field} = :{$field}";      
+            $updateFields[] = "{$field} = :{$field}";    
         }
         $updateFields = implode(', ', $updateFields);
         
